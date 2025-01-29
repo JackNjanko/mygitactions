@@ -1,7 +1,10 @@
-name: CI/CD Pipeline
+name: Simple CI/CD Pipeline
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -23,46 +26,3 @@ jobs:
 
       - name: Build and Run Tests
         run: mvn clean package
-
-  docker:
-    name: Build & Push Docker Image
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      - name: Build Docker Image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:latest .
-
-      - name: Push Docker Image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/myapp:latest
-
-  deploy:
-    name: Deploy to Server
-    needs: docker
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: SSH into Server and Deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            echo "Pulling the latest Docker image..."
-            docker pull ${{ secrets.DOCKER_USERNAME }}/myapp:latest
-
-            echo "Stopping and removing existing container..."
-            docker stop myapp || true
-            docker rm myapp || true
-
-            echo "Running new container..."
-            docker run -d -p 8080:8080 --name myapp ${{ secrets.DOCKER_USERNAME }}/myapp:latest
-
-            echo "Deployment complete!"
