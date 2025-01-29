@@ -22,7 +22,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'maven'
+
+      - name: Set up Maven
+        uses: actions/setup-java@v3
+        with:
+          maven-version: '3.8.1'
+          java-version: '17'
 
       - name: Build and Run Tests
         run: mvn clean package
