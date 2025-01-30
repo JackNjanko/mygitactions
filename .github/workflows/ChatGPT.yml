@@ -24,17 +24,22 @@ jobs:
           java-version: '17'
 
 
-      - name: Install Maven
-        run: |
-            wget https://downloads.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
-            tar -xvzf apache-maven-3.8.6-bin.tar.gz
-            mv apache-maven-3.8.6 /opt/maven
-            echo "M2_HOME=/opt/maven" >> $GITHUB_ENV
-            echo "MAVEN_HOME=/opt/maven" >> $GITHUB_ENV
-            echo "/opt/maven/bin" >> $GITHUB_PATH
-  
-      - name: Verify Maven Version
-        run: mvn -version
-  
-      - name: Build and Test with Maven
-        run: mvn clean install
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        maven: [ '3.8.8', '3.9.8' ]
+
+    name: Maven ${{ matrix.maven }} sample
+
+    steps:
+
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@< version >
+        with:
+          java-version: 8
+          maven-version: ${{ matrix.maven }}
+
+      - run: mvn -V ...
