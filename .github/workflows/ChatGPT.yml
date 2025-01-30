@@ -1,0 +1,21 @@
+on:
+    push
+  
+  jobs: 
+    ascii_job:
+      runs-on: ubuntu-latest
+      steps:
+      -name: checkout Repo
+      uses: actions/checkout@v4
+  
+      - name: Build and Run Tests
+        run: mvn -f project/pom.xml clean package
+
+        - name: Set up Maven
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          maven-version: '3.8.1'
+      
+      - name: Build and Run Tests
+        run: mvn clean package
