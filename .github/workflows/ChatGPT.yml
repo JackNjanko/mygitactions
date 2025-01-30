@@ -23,11 +23,18 @@ jobs:
           distribution: 'temurin'  # Use 'temurin' for the OpenJDK distribution
           java-version: '17'
 
-      - name: Set up Maven
-        uses: actions/setup-java@v3
-        with:
-          maven-version: '3.8.2'
-          java-version: '17'
 
-      - name: Build and Run Tests
-        run: mvn clean package
+      - name: Install Maven
+        run: |
+            wget https://downloads.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+            tar -xvzf apache-maven-3.8.6-bin.tar.gz
+            mv apache-maven-3.8.6 /opt/maven
+            echo "M2_HOME=/opt/maven" >> $GITHUB_ENV
+            echo "MAVEN_HOME=/opt/maven" >> $GITHUB_ENV
+            echo "/opt/maven/bin" >> $GITHUB_PATH
+  
+      - name: Verify Maven Version
+        run: mvn -version
+  
+      - name: Build and Test with Maven
+        run: mvn clean install
